@@ -16,7 +16,7 @@ jobs:
 
       - name: Render Deploy'u Başlat
         run: |
-          curl -X POST "https://api.render.com/v1/services/YOUR_RENDER_SERVICE_ID/deploys" \
+          curl -X POST "https://api.render.com/v1/services/srv-cuteodogph6c73b22uu0/deploys" \
           -H "Accept: application/json" \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -d ""
