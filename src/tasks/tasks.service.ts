@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Task, TaskDocument } from './schemas/task.schema';
 import { CreateTaskDto, UpdateTaskDto } from './index';
 import { Project, ProjectDocument } from '../projects/schemas/project.schema';
+import { SubTask, SubTaskDocument } from '../subtasks/schemas/subtask.schema';
 
 @Injectable()
 export class TasksService {
@@ -11,6 +12,7 @@ export class TasksService {
     @InjectModel(Task.name) private readonly taskModel: Model<TaskDocument>,
     @InjectModel(Project.name)
     private readonly projectModel: Model<ProjectDocument>,
+    @InjectModel(SubTask.name) private readonly subTaskModel: Model<SubTaskDocument>,
   ) {}
 
   // 📌 Görev oluşturma
@@ -80,7 +82,7 @@ export class TasksService {
 
   // 📌 Görev sil
   async deleteTask(taskId: string): Promise<string> {
-    const task = await this.taskModel.findByIdAndDelete(taskId);
+    const task = await this.taskModel.findById(taskId);
     if (!task) throw new NotFoundException('Task not found');
 
     await this.projectModel.findByIdAndUpdate(task.project.toString(), {
@@ -88,6 +90,8 @@ export class TasksService {
     });
 
     await this.updateProjectProgress(task.project.toString());
+    await this.subTaskModel.deleteMany({ task: taskId });
+    await this.taskModel.findByIdAndDelete(taskId);
     return 'Task deleted successfully';
   }
 

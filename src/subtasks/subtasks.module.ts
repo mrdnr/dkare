@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { SubTasksController } from './subtasks.controller';
 import { SubTasksService } from './subtasks.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -14,9 +14,10 @@ import { TasksModule } from '../tasks/tasks.module';
       { name: Task.name, schema: TaskSchema },
       { name: Project.name, schema: ProjectSchema },
     ]),
-    TasksModule,
+    forwardRef(() => TasksModule),
   ],
   controllers: [SubTasksController],
-  providers: [SubTasksService]
+  providers: [SubTasksService],
+  exports: [MongooseModule.forFeature([{ name: SubTask.name, schema: SubTaskSchema }])],
 })
 export class SubtasksModule {}

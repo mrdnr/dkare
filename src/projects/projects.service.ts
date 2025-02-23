@@ -6,12 +6,16 @@ import { CreateProjectDto, UpdateProjectDto } from './index';
 import * as fs from 'fs';
 import * as path from 'path';
 import { User, UserDocument } from '../users/schemas/user.schema';
+import { Task, TaskDocument } from '../tasks/schemas/task.schema';
+import { SubTask, SubTaskDocument } from '../subtasks/schemas/subtask.schema';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Task.name) private taskModel: Model<TaskDocument>,
+    @InjectModel(SubTask.name) private subTaskModel: Model<SubTaskDocument>,
   ) {}
 
   // 📌 Proje oluşturma
@@ -56,7 +60,9 @@ export class ProjectsService {
         .exec(),
       this.projectModel.countDocuments({ users: userId }),
     ]);
-
+    if (projects.length === 0) {
+      throw new NotFoundException('Proje bulunamadı');
+    }
     return {
       projects,
       total,
@@ -92,7 +98,6 @@ export class ProjectsService {
       throw new NotFoundException('Proje bulunamadı');
     }
 
-    // Sürekli resim yüklemesine karşı koruma
     if (file) {
       if (project.image) {
         const oldImagePath = path.join(process.cwd(), 'assets', project.image);
@@ -103,7 +108,6 @@ export class ProjectsService {
       updateProjectDto.image = file.filename;
     }
 
-    // Kullanıcıları ekleme
     if (updateProjectDto.users && Array.isArray(updateProjectDto.users)) {
       const newUsers = updateProjectDto.users.map(
         (userId) => new Types.ObjectId(userId),
@@ -111,7 +115,6 @@ export class ProjectsService {
       project.users = Array.from(new Set([...project.users, ...newUsers]));
     }
 
-    // Diğer alanları güncelle
     if (updateProjectDto.name) {
       project.name = updateProjectDto.name;
     }
@@ -125,7 +128,8 @@ export class ProjectsService {
     return project.save();
   }
 
-  async remove(id: string): Promise<void> {
+  // 📌 Projeyi silme
+  async remove(id: string): Promise<string> {
     const project = await this.projectModel.findById(id);
     if (!project) {
       throw new NotFoundException('Proje bulunamadı');
@@ -139,6 +143,9 @@ export class ProjectsService {
       }
     }
 
+    await this.subTaskModel.deleteMany({ project: id });
+    await this.taskModel.deleteMany({ project: id });
     await this.projectModel.findByIdAndDelete(id);
+    return 'Proje ve alt görevler başarıyla silindi.';
   }
 }

@@ -87,6 +87,8 @@ export class ProjectsController {
       }
     }
   })
+  @ApiResponse({ status: 401, description: 'Yetkisiz erişim' })
+  @ApiResponse({ status: 404, description: 'Proje bulunamadı' })
   async findAll(
     @Request() req: RequestWithUser,
     @Query('page') page: number = 0,
@@ -100,6 +102,7 @@ export class ProjectsController {
   @UseGuards(ProjectMemberGuard)
   @ApiOperation({ summary: 'Belirli bir projeyi getir' })
   @ApiResponse({ status: 200, description: 'Proje başarıyla getirildi.' })
+  @ApiResponse({ status: 404, description: 'Proje bulunamadı' })
   async findOne(@Param('id') id: string) {
     return this.projectsService.findOne(id);
   }
@@ -136,6 +139,7 @@ export class ProjectsController {
   })
   @ApiOperation({ summary: 'Projeyi güncelle' })
   @ApiResponse({ status: 200, description: 'Proje başarıyla güncellendi.' })
+  @ApiResponse({ status: 404, description: 'Proje bulunamadı' })
   async update(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
@@ -148,7 +152,8 @@ export class ProjectsController {
   @Delete(':id')
   @UseGuards(ProjectMemberGuard)
   @ApiOperation({ summary: 'Projeyi sil' })
-  @ApiResponse({ status: 200, description: 'Proje başarıyla silindi.' })
+  @ApiResponse({ status: 200, description: 'Proje ve alt görevler başarıyla silindi.' })
+  @ApiResponse({ status: 404, description: 'Proje bulunamadı' })
   async remove(@Param('id') id: string) {
     return this.projectsService.remove(id);
   }

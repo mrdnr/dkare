@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { ProjectsController } from './projects.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Project, ProjectSchema } from './schemas/project.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
+import { TasksModule } from '../tasks/tasks.module';
+import { SubtasksModule } from '../subtasks/subtasks.module';
 
 @Module({
   imports: [
@@ -11,6 +13,8 @@ import { User, UserSchema } from '../users/schemas/user.schema';
       { name: Project.name, schema: ProjectSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    forwardRef(() => TasksModule),
+    forwardRef(() => SubtasksModule),
   ],
   providers: [ProjectsService],
   controllers: [ProjectsController],
