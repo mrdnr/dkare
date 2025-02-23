@@ -20,7 +20,6 @@ async function bootstrap() {
     res.json(document);
   });
 
-  // Statik dosya servisini ekle
   app.use('/assets', express.static(join(process.cwd(), 'assets')));
 
   await app.listen(process.env.PORT ?? 3000);
