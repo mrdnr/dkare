@@ -16,7 +16,7 @@ Bu proje, kullanıcıların projeler, görevler ve alt görevler oluşturmasına
 ### Kurulum
 1. **Depoyu Klonlayın:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/mrdnr/dkare
    ```
 2. **Bağımlılıkları Yükleyin:**
    ```bash
@@ -25,7 +25,7 @@ Bu proje, kullanıcıların projeler, görevler ve alt görevler oluşturmasına
    yarn install
    ```
 3. **Çevre Değişkenlerini Ayarlayın:**
-   `.env` dosyasını oluşturun ve gerekli çevre değişkenlerini ayarlayın.
+   `.env` dosyasını örnek olarak repoda bulunmaktadır.
 
 4. **Uygulamayı Başlatın:**
    ```bash
